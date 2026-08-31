@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="lo">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ລະບົບກອງທຶນສະຫວັດດີການສັງຄົມ</title>
+<style>
+/* =====================================================
+   CSS ຕົ້ນສະບັບຂອງທ່ານ
+===================================================== */
+*{ box-sizing:border-box; margin:0; padding:0; font-family:"Noto Sans Lao","Phetsarath OT",Arial,sans-serif; }
+body{ background:#f3f6f9; color:#1f2937; }
+.header{ background:linear-gradient(135deg,#075e54,#0f766e,#14b8a6); color:white; padding:24px 15px; display:flex; justify-content:space-between; align-items:center; box-shadow:0 3px 12px rgba(0,0,0,.15); }
+.header-title h1{ font-size:25px; margin-bottom:6px; }
+.header-title p{ font-size:14px; opacity:.92; }
+.container{ width:95%; max-width:1300px; margin:22px auto; }
+.nav{ display:flex; flex-wrap:wrap; gap:8px; margin-bottom:20px; }
+.nav button{ border:0; background:white; padding:12px 18px; border-radius:9px; cursor:pointer; font-size:14px; font-weight:bold; box-shadow:0 2px 8px rgba(0,0,0,.08); transition:.2s; }
+.nav button:hover{ background:#e6fffb; }
+.nav button.active{ background:#0f766e; color:white; }
+.page{ display:none; }
+.page.active{ display:block; }
+.cards{ display:grid; grid-template-columns:repeat(4,1fr); gap:15px; margin-bottom:20px; }
+.card{ background:white; border-radius:12px; padding:20px; box-shadow:0 2px 10px rgba(0,0,0,.07); }
+.card-title{ color:#6b7280; font-size:14px; }
+.card-number{ margin-top:8px; font-size:25px; font-weight:bold; color:#0f766e; }
+.panel{ background:white; border-radius:12px; padding:22px; margin-bottom:20px; box-shadow:0 2px 10px rgba(0,0,0,.07); }
+.panel h2{ color:#0f766e; margin-bottom:18px; }
+.form-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:15px; }
+.field label{ display:block; margin-bottom:6px; font-weight:bold; font-size:14px; }
+input, select{ width:100%; padding:11px 12px; border:1px solid #d1d5db; border-radius:8px; background:white; outline:none; font-size:14px; }
+input:focus, select:focus{ border-color:#0f766e; box-shadow:0 0 0 2px rgba(15,118,110,.08); }
+.actions{ display:flex; gap:8px; flex-wrap:wrap; margin-top:18px; }
+.btn{ border:0; padding:10px 16px; border-radius:8px; cursor:pointer; font-weight:bold; font-size:14px; }
+.btn-primary{ background:#0f766e; color:white; }
+.btn-primary:hover{ background:#115e59; }
+.btn-danger{ background:#dc2626; color:white; }
+.btn-warning{ background:#d97706; color:white; }
+.btn-success{ background:#16a34a; color:white; }
+.btn-secondary{ background:#64748b; color:white; }
+.table-wrap{ overflow-x:auto; }
+table{ width:100%; border-collapse:collapse; min-width:950px; }
+th, td{ padding:11px 10px; border-bottom:1px solid #e5e7eb; text-align:left; font-size:14px; }
+th{ background:#f0fdfa; color:#115e59; white-space:nowrap; }
+tr:hover td{ background:#fafafa; }
+.badge{ display:inline-block; padding:5px 10px; border-radius:20px; font-size:12px; font-weight:bold; }
+.badge-active{ background:#dcfce7; color:#166534; }
+.badge-child{ background:#dbeafe; color:#1d4ed8; }
+.badge-adult{ background:#dcfce7; color:#166534; }
+.badge-paid{ background:#dcfce7; color:#166534; }
+.badge-unpaid{ background:#fee2e2; color:#991b1b; }
+.info-box{ background:#ecfdf5; border:1px solid #99f6e4; padding:16px; border-radius:10px; margin-bottom:15px; }
+.info-box.warning{ background:#fffbeb; border-color:#fde68a; }
+.info-box h3{ color:#0f766e; margin-bottom:8px; }
+.money{ font-size:24px; font-weight:bold; color:#0f766e; margin-top:6px; }
+.search-box{ margin-bottom:15px; }
+.empty{ text-align:center; padding:35px; color:#6b7280; }
+.rule-card{ display:grid; grid-template-columns:1fr 1fr; gap:15px; }
+.rule{ border:1px solid #e5e7eb; border-radius:10px; padding:18px; }
+.rule h3{ margin-bottom:8px; }
+.rule .amount{ color:#0f766e; font-size:22px; font-weight:bold; }
+.footer{ text-align:center; color:#6b7280; padding:25px 15px; font-size:13px; }
+
+@media(max-width:900px){ .cards, .form-grid{ grid-template-columns:repeat(2,1fr); } }
+@media(max-width:600px){ 
+    .cards, .form-grid, .rule-card{ grid-template-columns:1fr; }
+    .header{ flex-direction:column; text-align:center; }
+    .header-title h1{ font-size:20px; }
+    .nav button{ flex:1 1 45%; }
+}
+
+/* =====================================================
+   CSS ເພີ່ມເຕີມສຳລັບລະບົບ Login ແລະ ການແຍກສິດ (Roles)
+===================================================== */
+#login-screen { display:flex; justify-content:center; align-items:center; height:100vh; background:linear-gradient(135deg,#075e54,#0f766e,#14b8a6); }
+.login-box { background:white; padding:30px; border-radius:12px; width:90%; max-width:400px; box-shadow:0 10px 25px rgba(0,0,0,.2); text-align:center; }
+.login-box h2 { color:#0f766e; margin-bottom:20px; }
+.login-box input { width:100%; padding:12px; margin-bottom:15px; border:1px solid #d1d5db; border-radius:8px; outline:none; font-size: 15px; }
+.login-box button { width:100%; padding:12px; border:none; border-radius:8px; font-weight:bold; cursor:pointer; font-size:16px; transition:.2s; background:#0f766e; color:white; }
+.login-box button:hover { background:#115e59; }
+
+#main-app { display:none; }
+.user-info { text-align:right; margin-top: 10px; }
+.user-info .role-badge { color:white; padding:3px 8px; border-radius:12px; font-size:12px; font-weight:bold; margin-left:8px; }
+.btn-logout { background:#dc2626; color:white; border:none; padding:8px 12px; border-radius:6px; cursor:pointer; margin-top:8px; font-size:13px; font-weight:bold; }
+
+/* ເຊື່ອງອົງປະກອບຂອງ Admin ຖ້າບໍ່ແມ່ນ Admin (USER ຈະບໍ່ເຫັນ) */
+body:not(.is-admin) .admin-only { display: none !important; }
+</style>
+</head>
+
+<body>
+
+<!-- ---------------------------------------------------
+   ໜ້າຈໍລັອກອິນ (LOGIN SCREEN)
+---------------------------------------------------- -->
+<div id="login-screen">
+    <div class="login-box">
+        <h2>🏦 ເຂົ້າສູ່ລະບົບກອງທຶນ</h2>
+        <form onsubmit="event.preventDefault(); login();">
+            <input type="text" id="authEmail" placeholder="ຊື່ຜູ້ໃຊ້ (ຕົວຢ່າງ: WELFARE-ADMIN)" required />
+            <input type="password" id="authPassword" placeholder="ລະຫັດຜ່ານ" required />
+            <button type="submit">ເຂົ້າສູ່ລະບົບ (Login)</button>
+        </form>
+    </div>
+</div>
+
+<!-- ---------------------------------------------------
+   ໜ້າຈໍຫຼັກ (MAIN APP) - ເປັນໂຄດຕົ້ນສະບັບຂອງທ່ານທັງໝົດ
+---------------------------------------------------- -->
+<div id="main-app">
+    <header class="header">
+        <div class="header-title">
+            <h1>🏦 ລະບົບຄວບຄຸມກອງທຶນສະຫວັດດີການສັງຄົມ</h1>
+            <p>ກອງທຶນສະຫວັດດີການສຳລັບກໍລະນີເສຍຊີວິດ</p>
+        </div>
+        <div class="user-info">
+            <span id="displayUserEmail" style="font-weight:bold;"></span>
+            <span id="displayUserRole" class="role-badge"></span>
+            <br>
+            <button class="btn-logout" onclick="logout()">ອອກຈາກລະບົບ</button>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="nav">
+            <button class="active" onclick="showPage('dashboard',this)">🏠 ໜ້າຫຼັກ</button>
+            <button onclick="showPage('members',this)">👥 ສະມາຊິກ</button>
+            <button onclick="showPage('death',this)">⚰️ ການເສຍຊີວິດ</button>
+            <button onclick="showPage('collection',this)">💰 ການເກັບເງິນ</button>
+            <button onclick="showPage('reports',this)">📊 ລາຍງານ</button>
+            <button class="admin-only" onclick="showPage('audit',this)">📝 Audit Log</button>
+        </div>
+
+        <!-- DASHBOARD -->
+        <section id="dashboard" class="page active">
+            <div class="cards">
+                <div class="card"><div class="card-title">👥 ຈຳນວນສະມາຊິກ</div><div id="dashboardMembers" class="card-number">0</div></div>
+                <div class="card"><div class="card-title">⚰️ ກໍລະນີເສຍຊີວິດ</div><div id="dashboardDeaths" class="card-number">0</div></div>
+                <div class="card"><div class="card-title">💰 ຍອດທີ່ຮັບເຂົ້າ</div><div id="dashboardIncome" class="card-number">0 ກີບ</div></div>
+                <div class="card"><div class="card-title">💵 ຍອດຈ່າຍສະຫວັດດີການ</div><div id="dashboardPaid" class="card-number">0 ກີບ</div></div>
+            </div>
+
+            <div class="panel">
+                <h2>📌 ຫຼັກການຂອງກອງທຶນ</h2>
+                <div class="rule-card">
+                    <div class="rule">
+                        <h3>👨 ກໍລະນີຜູ້ຕາຍເປັນຜູ້ໃຫຍ່</h3>
+                        <div class="amount">200,000 ກີບ / ຄອບຄົວ</div>
+                        <p style="margin-top:8px">ເກັບຈາກສະມາຊິກທຸກຄອບຄົວ</p>
+                    </div>
+                    <div class="rule">
+                        <h3>👶 ກໍລະນີຜູ້ຕາຍເປັນເດັກນ້ອຍ</h3>
+                        <div class="amount">100,000 ກີບ / ຄອບຄົວ</div>
+                        <p style="margin-top:8px">ເກັບຈາກສະມາຊິກທຸກຄອບຄົວ</p>
+                    </div>
+                </div>
+                <div class="info-box" style="margin-top:15px">
+                    <b>⚠️ ຫຼັກການສຳຄັນ</b>
+                    <p style="margin-top:6px">1 ລະຫັດສະມາຊິກ = 1 ຄອບຄົວ<br>ບໍ່ຕ້ອງປ້ອນສະມາຊິກທຸກຄົນໃນຄອບຄົວ.<br>ສຳມະໂນຄົວໃຊ້ສຳລັບຕິດຕາມສະມາຊິກໃນຄອບຄົວຢູ່ເບື້ອງຫຼັງ.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- MEMBERS -->
+        <section id="members" class="page">
+            <div class="panel admin-only">
+                <h2>👥 ເພີ່ມສະມາຊິກ</h2>
+                <div class="info-box"><b>ວິທີບັນທຶກ:</b><br>1 ສະມາຊິກໃນລະບົບ = 1 ຄອບຄົວ<br>ສາມາດໃຊ້ຊື່ຕົວແທນຄອບຄົວເປັນຜູ້ລົງທະບຽນໄດ້.</div>
+                <div class="form-grid">
+                    <div class="field"><label>ຊື່ຕົວແທນຄອບຄົວ *</label><input id="memberName" type="text" placeholder="ຕົວຢ່າງ: ທ່ານ ສົມຊາຍ"></div>
+                    <div class="field"><label>ນາມສະກຸນ</label><input id="memberSurname" type="text" placeholder="ນາມສະກຸນ"></div>
+                    <div class="field"><label>ເບີໂທລະສັບ</label><input id="memberPhone" type="text" placeholder="020 xxxx xxxx"></div>
+                    <div class="field">
+                        <label>ແຂວງ *</label>
+                        <select id="memberProvince" onchange="updateDistricts()"><option value="">-- ເລືອກແຂວງ --</option></select>
+                    </div>
+                    <div class="field">
+                        <label>ເມືອງ *</label>
+                        <select id="memberDistrict"><option value="">-- ກະລຸນາເລືອກແຂວງກ່ອນ --</option></select>
+                    </div>
+                    <div class="field"><label>ບ້ານ</label><input id="memberVillage" type="text" placeholder="ປ້ອນຊື່ບ້ານ"></div>
+                    <div class="field"><label>ໝາຍເຫດ</label><input id="memberNote" type="text" placeholder="ໝາຍເຫດ"></div>
+                </div>
+                <div class="actions">
+                    <button class="btn btn-primary" onclick="addMember()">➕ ເພີ່ມສະມາຊິກ</button>
+                </div>
+            </div>
+
+            <div class="panel">
+                <h2>📋 ລາຍການສະມາຊິກ</h2>
+                <div class="search-box">
+                    <input id="memberSearch" type="text" placeholder="🔎 ຄົ້ນຫາລະຫັດ, ຊື່, ເບີໂທ, ແຂວງ, ເມືອງ, ບ້ານ..." oninput="renderMembers()">
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr><th>ລະຫັດສະມາຊິກ</th><th>ຕົວແທນຄອບຄົວ</th><th>ເບີໂທ</th><th>ແຂວງ</th><th>ເມືອງ</th><th>ບ້ານ</th><th>ສະຖານະ</th><th class="admin-only">ຈັດການ</th></tr>
+                        </thead>
+                        <tbody id="memberTable"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- DEATH -->
+        <section id="death" class="page">
+            <div class="panel admin-only">
+                <h2>⚰️ ບັນທຶກການເສຍຊີວິດ</h2>
+                <div class="info-box warning"><b>ສຳຄັນ:</b><br>ໃນຂັ້ນຕອນນີ້ບໍ່ໄດ້ນັບຈຳນວນຄົນໃນຄອບຄົວ.<br>ລະບົບຈະເກັບເງິນຈາກ <b>ທຸກສະມາຊິກ = 1 ຄອບຄົວ</b>.</div>
+                <div class="form-grid">
+                    <div class="field"><label>ຄອບຄົວ/ສະມາຊິກຜູ້ເສຍຊີວິດ *</label><select id="deathMember" onchange="calculateDeath()"></select></div>
+                    <div class="field"><label>ວັນທີເສຍຊີວິດ *</label><input id="deathDate" type="date"></div>
+                    <div class="field"><label>ຜູ້ເສຍຊີວິດເປັນ *</label><select id="deathType" onchange="calculateDeath()"><option value="">-- ເລືອກ --</option><option value="adult">👨 ຜູ້ໃຫຍ່</option><option value="child">👶 ເດັກນ້ອຍ</option></select></div>
+                    <div class="field"><label>ໝາຍເຫດ</label><input id="deathNote" type="text" placeholder="ໝາຍເຫດ"></div>
+                </div>
+                <div id="deathCalculation" class="info-box" style="display:none;margin-top:18px"></div>
+                <div class="actions">
+                    <button class="btn btn-primary" onclick="addDeath()">💾 ບັນທຶກການເສຍຊີວິດ</button>
+                </div>
+            </div>
+
+            <div class="panel">
+                <h2>📋 ປະຫວັດການເສຍຊີວິດ</h2>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr><th>ເລກກໍລະນີ</th><th>ວັນທີ</th><th>ຄອບຄົວ</th><th>ປະເພດຜູ້ຕາຍ</th><th>ຈຳນວນຄອບຄົວ</th><th>ອັດຕາ</th><th>ຍອດທີ່ເກັບ</th><th>ສະຖານະ</th></tr>
+                        </thead>
+                        <tbody id="deathTable"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- COLLECTION -->
+        <section id="collection" class="page">
+            <div class="cards">
+                <div class="card"><div class="card-title">ຈຳນວນສະມາຊິກ</div><div id="collectionMembers" class="card-number">0</div></div>
+                <div class="card"><div class="card-title">ຈຳນວນກໍລະນີ</div><div id="collectionDeaths" class="card-number">0</div></div>
+                <div class="card"><div class="card-title">ຍອດທີ່ຕ້ອງເກັບ</div><div id="collectionTotal" class="card-number">0 ກີບ</div></div>
+                <div class="card"><div class="card-title">ຍອດທີ່ຈ່າຍແລ້ວ</div><div id="collectionPaid" class="card-number">0 ກີບ</div></div>
+            </div>
+            <div class="panel">
+                <h2>💰 ລາຍການການເກັບເງິນ</h2>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr><th>ເລກກໍລະນີ</th><th>ວັນທີ</th><th>ຜູ້ຕາຍ</th><th>ປະເພດ</th><th>ຈຳນວນຄອບຄົວ</th><th>ອັດຕາ</th><th>ຍອດ</th><th>ສະຖານະ</th><th>ຫຼັກຖານ</th><th class="admin-only">ຈັດການ</th></tr>
+                        </thead>
+                        <tbody id="collectionTable"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- REPORTS -->
+        <section id="reports" class="page">
+            <div class="panel">
+                <h2>📊 ລາຍງານສະຫຼຸບ</h2>
+                <div class="cards">
+                    <div class="card"><div class="card-title">ສະມາຊິກທັງໝົດ</div><div id="reportMembers" class="card-number">0</div></div>
+                    <div class="card"><div class="card-title">ກໍລະນີເສຍຊີວິດ</div><div id="reportDeaths" class="card-number">0</div></div>
+                    <div class="card"><div class="card-title">ກໍລະນີເດັກ</div><div id="reportChildren" class="card-number">0</div></div>
+                    <div class="card"><div class="card-title">ກໍລະນີຜູ້ໃຫຍ່</div><div id="reportAdults" class="card-number">0</div></div>
+                </div>
+            </div>
+            <div class="panel">
+                <h2>🧮 ຕົວຢ່າງການຄຳນວນ</h2>
+                <div class="info-box">
+                    <b>ຖ້າມີສະມາຊິກ <span id="exampleMembers">0</span> ຄອບຄົວ</b><br><br>
+                    👨 ຖ້າຜູ້ຕາຍເປັນຜູ້ໃຫຍ່:<br><b id="adultCalculation">0 × 200,000 = 0 ກີບ</b><br><br>
+                    👶 ຖ້າຜູ້ຕາຍເປັນເດັກ:<br><b id="childCalculation">0 × 100,000 = 0 ກີບ</b>
+                </div>
+            </div>
+            <div class="panel">
+                <h2>💵 ຍອດລວມກອງທຶນ</h2>
+                <div class="cards">
+                    <div class="card"><div class="card-title">ຍອດທີ່ຕ້ອງເກັບທັງໝົດ</div><div id="reportTotal" class="card-number">0 ກີບ</div></div>
+                    <div class="card"><div class="card-title">ຈ່າຍແລ້ວ</div><div id="reportPaid" class="card-number">0 ກີບ</div></div>
+                    <div class="card"><div class="card-title">ຍັງຄ້າງ</div><div id="reportUnpaid" class="card-number">0 ກີບ</div></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- AUDIT LOG (ADMIN ONLY) -->
+        <section id="audit" class="page admin-only">
+            <div class="panel">
+                <h2>📝 Audit Log (ປະຫວັດການໃຊ້ງານລະບົບ)</h2>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr><th>ວັນເວລາ</th><th>ຜູ້ໃຊ້ (User)</th><th>ການກະທຳ (Action)</th><th>ລາຍລະອຽດ (Details)</th></tr>
+                        </thead>
+                        <tbody id="auditTable"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+    </div>
+    <footer class="footer">ລະບົບຄວບຄຸມກອງທຶນສະຫວັດດີການສັງຄົມ © 2026</footer>
+</div>
+
+<!-- =====================================================
+   FIREBASE SDK 
+===================================================== -->
+<script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-storage-compat.js"></script>
+
+<script>
+/* =====================================================
+   ຕັ້ງຄ່າ FIREBASE (⚠️ ສຳຄັນຫຼາຍ: ຕ້ອງເອົາລະຫັດຈາກ Firebase ມາປ່ຽນບ່ອນນີ້)
+===================================================== */
+const firebaseConfig = {
+  apiKey: "AIzaSyCcaB-1T-nwn07ViLUNcjTBh_KYYGapH2Q",
+  authDomain: "welfare-fund-system.firebaseapp.com",
+  projectId: "welfare-fund-system",
+  storageBucket: "welfare-fund-system.firebasestorage.app",
+  messagingSenderId: "1021514415892",
+  appId: "1:1021514415892:web:99074c852f522d2e544c01",
+  measurementId: "G-7BQ17KFV49"
+};
+
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
+
+const auth = firebase.auth();
+const db = firebase.firestore();
+const storage = firebase.storage();
+
+/* =====================================================
+   STATE MANAGEMENT (ຕົວແປເກັບຂໍ້ມູນ)
+===================================================== */
+let currentUser = null;
+let currentRole = "user";
+let members = [];
+let deaths = [];
+let audits = [];
+
+const ADMIN_USERNAME = "WELFARE-ADMIN"; 
+
+/* =====================================================
+   AUTHENTICATION LOGIC (Seamless Auto-Register/Login)
+===================================================== */
+function formatEmail(input) {
+    let text = input.trim().toUpperCase();
+    return text.includes("@") ? text : text + "@WELFARE.LA"; 
+}
+
+function displayUsername(email) {
+    return email.split("@")[0];
+}
+
+auth.onAuthStateChanged(async (user) => {
+    if (user) {
+        currentUser = user;
+        let username = displayUsername(user.email);
+        currentRole = (username === ADMIN_USERNAME) ? "admin" : "user";
+        
+        document.getElementById("displayUserEmail").textContent = username;
+        document.getElementById("displayUserRole").textContent = currentRole.toUpperCase();
+        document.getElementById("displayUserRole").style.background = currentRole === "admin" ? "#dc2626" : "#2563eb"; 
+        
+        if(currentRole === "admin") document.body.classList.add("is-admin");
+        else document.body.classList.remove("is-admin");
+
+        document.getElementById("login-screen").style.display = "none";
+        document.getElementById("main-app").style.display = "block";
+
+        startListeners();
+        addAuditLog("ເຂົ້າສູ່ລະບົບ", "ເຂົ້າໃຊ້ງານລະບົບສຳເລັດ");
+    } else {
+        currentUser = null;
+        currentRole = "user";
+        document.body.classList.remove("is-admin");
+        document.getElementById("login-screen").style.display = "flex";
+        document.getElementById("main-app").style.display = "none";
+    }
+});
+
+async function login() {
+    let rawUsername = document.getElementById("authEmail").value.trim();
+    let pwd = document.getElementById("authPassword").value.trim();
+    if(!rawUsername || !pwd) return alert("ກະລຸນາປ້ອນຊື່ຜູ້ໃຊ້ ແລະ ລະຫັດຜ່ານ");
+    
+    let email = formatEmail(rawUsername);
+    
+    try {
+        await auth.signInWithEmailAndPassword(email, pwd);
+    } catch(err) {
+        if (err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential') {
+            try {
+                await auth.createUserWithEmailAndPassword(email, pwd);
+            } catch(regErr) {
+                alert("ເຂົ້າສູ່ລະບົບລົ້ມເຫຼວ: ກວດເບິ່ງຊື່ຜູ້ໃຊ້ ແລະ ລະຫັດຜ່ານໃຫ້ຖືກຕ້ອງ");
+            }
+        } else {
+            alert("ເຂົ້າສູ່ລະບົບລົ້ມເຫຼວ: " + err.message);
+        }
+    }
+}
+
+function logout() {
+    addAuditLog("ອອກຈາກລະບົບ", "ສຳເລັດ");
+    setTimeout(() => auth.signOut(), 500);
+}
+
+async function addAuditLog(action, details) {
+    if(!currentUser) return;
+    try {
+        await db.collection("audits").add({
+            email: displayUsername(currentUser.email),
+            action: action,
+            details: details,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+    } catch(e) {}
+}
+
+/* =====================================================
+   REALTIME LISTENERS (ດຶງຂໍ້ມູນອອນໄລນ໌ອັດຕະໂນມັດ)
+===================================================== */
+function startListeners() {
+    db.collection("members").orderBy("createdAt", "asc").onSnapshot((snapshot) => {
+        members = [];
+        snapshot.forEach((doc) => members.push({ id: doc.id, ...doc.data() }));
+        refreshAll();
+    });
+
+    db.collection("deaths").orderBy("createdAt", "asc").onSnapshot((snapshot) => {
+        deaths = [];
+        snapshot.forEach((doc) => deaths.push({ id: doc.id, ...doc.data() }));
+        refreshAll();
+    });
+
+    if(currentRole === "admin") {
+        db.collection("audits").orderBy("createdAt", "desc").limit(50).onSnapshot((snapshot) => {
+            audits = [];
+            snapshot.forEach((doc) => audits.push({ id: doc.id, ...doc.data() }));
+            renderAudit();
+        });
+    }
+}
+
+/* =====================================================
+   PROVINCE + DISTRICT DATABASE (ຖານຂໍ້ມູນແຂວງ/ເມືອງ)
+===================================================== */
+const provinceDistricts = {
+    "ນະຄອນຫຼວງວຽງຈັນ":["ຈັນທະບູລີ","ສີໂຄດຕະບອງ","ໄຊເສດຖາ","ສີສັດຕະນາກ","ນາຊາຍທອງ","ໄຊທານີ","ຫາດຊາຍຟອງ","ສັງທອງ","ປາກງື່ມ"],
+    "ຜົ້ງສາລີ":["ຜົ້ງສາລີ","ໃໝ່","ຂວາ","ສຳພັນ","ບຸນເໜືອ","ຍອດອູ","ບຸນໃຕ້"],
+    "ຫຼວງນ້ຳທາ":["ຫຼວງນ້ຳທາ","ສິງ","ລອງ","ວຽງພູຄາ","ນາແລ"],
+    "ອຸດົມໄຊ":["ໄຊ","ຫຼາ","ນາໝໍ້","ງາ","ແບງ","ຮຸນ","ປາກແບງ"],
+    "ບໍ່ແກ້ວ":["ຫ້ວຍຊາຍ","ຕົ້ນເຜິ້ງ","ເມິງ","ຜາອຸດົມ","ປາກທາ"],
+    "ຫຼວງພະບາງ":["ຫຼວງພະບາງ","ຈອມເພັດ","ນານ","ປາກອູ","ນ້ຳບາກ","ງອຍ","ປາກແຊງ","ໂພນໄຊ","ຈັນທະບູລີ","ວຽງຄຳ","ພູຄູນ","ຊຽງເງິນ"],
+    "ຫົວພັນ":["ຊຳເໜືອ","ຊຽງຄໍ້","ວຽງທອງ","ວຽງໄຊ","ຫົວເມືອງ","ຊຳໃຕ້","ສົບເບົາ","ແອດ","ກວັນ"],
+    "ໄຊຍະບູລີ":["ໄຊຍະບູລີ","ຄອບ","ເງິນ","ບໍ່ແຕນ","ຫົງສາ","ຊຽງຮ່ອນ","ປາກລາຍ","ແກ່ນທ້າວ","ບ້ານດອນ","ພຽງ","ທົ່ງມີໄຊ"],
+    "ຊຽງຂວາງ":["ແປກ","ຄຳ","ໜອງແຮດ","ຄູນ","ໝອກໃໝ່","ພູກູດ","ຜາໄຊ"],
+    "ວຽງຈັນ":["ໂພນໂຮງ","ແກ້ວອຸດົມ","ກາສີ","ຫີນເຫີບ","ໜອງແຮດ","ເຟືອງ","ວັງວຽງ","ຊະນະຄາມ","ແມດ","ວຽງຄຳ","ຫຼວງພະບາງ"],
+    "ບໍລິຄຳໄຊ":["ປາກຊັນ","ທ່າພະບາດ","ປາກກະດິງ","ບໍລິຄັນ","ວຽງທອງ","ປາກຊ່ອງ","ຄຳເກີດ"],
+    "ຄຳມ່ວນ":["ທ່າແຂກ","ມະຫາໄຊ","ໜອງບົກ","ຫີນບູນ","ຍົມມະລາດ","ບົວລະພາ","ນາກາຍ","ເຊບັ້ງໄຟ","ໄຊບົວທອງ","ຄູນຄຳ"],
+    "ສະຫວັນນະເຂດ":["ໄກສອນພົມວິຫານ","ອຸທຸມພອນ","ອາດສະພັງທອງ","ພີນ","ເຊໂປນ","ນອງ","ທ່າປາງທອງ","ສອງຄອນ","ຈຳພອນ","ຊົນບູລີ","ສີພັນດອນ","ວິລະບູລີ","ອາດສະພອນ","ໄຊພູທອງ","ພະລານໄຊ"],
+    "ສາລະວັນ":["ສາລະວັນ","ຕະໂອ້ຍ","ຕຸ້ມລານ","ລະຄອນເພັງ","ວາປີ","ເລົ່າງາມ","ຄົງເຊໂດນ","ສະມ້ວຍ"],
+    "ເຊກອງ":["ລະມາມ","ກະລຶມ","ດາກຈຶງ","ທ່າແຕງ"],
+    "ຈຳປາສັກ":["ປາກເຊ","ຊະນະສົມບູນ","ປາກຊ່ອງ","ບາຈຽງເຈີນ","ປະທຸມພອນ","ໂພນທອງ","ຈຳປາສັກ","ສຸຂຸມາ","ມູນລະປະໂມກ","ຄົງເຊໂດນ"],
+    "ອັດຕະປື":["ໄຊເສດຖາ","ສາມັກຄີໄຊ","ສະໜາມໄຊ","ຊານໄຊ","ພູວົງ"],
+    "ໄຊສົມບູນ":["ອະນຸວົງ","ທ່າໂທມ","ລ່ອງຊານ","ພູນ","ເມືອງໄຊ","ຮົ່ມ"]
+};
+
+function loadProvinces(){
+    const select = document.getElementById("memberProvince");
+    if(!select) return;
+    select.innerHTML = `<option value="">-- ເລືອກແຂວງ --</option>` + Object.keys(provinceDistricts).map(prov => `<option value="${escapeHTML(prov)}">${escapeHTML(prov)}</option>`).join("");
+}
+
+function updateDistricts(){
+    const prov = document.getElementById("memberProvince").value;
+    const distSelect = document.getElementById("memberDistrict");
+    if(!distSelect) return;
+    distSelect.innerHTML = `<option value="">-- ເລືອກເມືອງ --</option>`;
+    if(!prov || !provinceDistricts[prov]) return;
+    distSelect.innerHTML += provinceDistricts[prov].map(dist => `<option value="${escapeHTML(dist)}">${escapeHTML(dist)}</option>`).join("");
+}
+
+/* =====================================================
+   HELPER FUNCTIONS
+===================================================== */
+function money(value){ return Number(value || 0).toLocaleString("en-US") + " ກີບ"; }
+function escapeHTML(value){ return String(value ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;"); }
+
+function generateMemberCode(){
+    let max = 0;
+    members.forEach(m => { let match = String(m.code||"").match(/(\d+)$/); if(match) max = Math.max(max, Number(match[1])); });
+    return "MEM-" + String(max + 1).padStart(6,"0");
+}
+function generateDeathCode(){
+    let max = 0;
+    deaths.forEach(d => { let match = String(d.code||"").match(/(\d+)$/); if(match) max = Math.max(max, Number(match[1])); });
+    return "DTH-" + String(max + 1).padStart(6,"0");
+}
+
+function showPage(pageId, button){
+    document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+    document.getElementById(pageId).classList.add("active");
+    document.querySelectorAll(".nav button").forEach(btn => btn.classList.remove("active"));
+    button.classList.add("active");
+    refreshAll();
+}
+
+/* =====================================================
+   ADMIN ACTIONS (ລົບ, ເພີ່ມ)
+===================================================== */
+async function addMember(){
+    if(currentRole !== "admin") return;
+    let name = document.getElementById("memberName").value.trim();
+    let prov = document.getElementById("memberProvince").value;
+    let dist = document.getElementById("memberDistrict").value;
+
+    if(!name || !prov || !dist) return alert("ປ້ອນຂໍ້ມູນໃຫ້ຄົບຖ້ວນ (ຊື່, ແຂວງ, ເມືອງ)");
+
+    let member = {
+        code: generateMemberCode(), name: name, surname: document.getElementById("memberSurname").value.trim(),
+        phone: document.getElementById("memberPhone").value.trim(), province: prov, district: dist,
+        village: document.getElementById("memberVillage").value.trim(),
+        note: document.getElementById("memberNote").value.trim(), active: true,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    };
+
+    try {
+        await db.collection("members").add(member);
+        addAuditLog("ເພີ່ມສະມາຊິກ", `ລະຫັດ: ${member.code}, ຊື່: ${member.name}`);
+        document.getElementById("memberName").value=""; document.getElementById("memberSurname").value="";
+        document.getElementById("memberPhone").value=""; document.getElementById("memberVillage").value="";
+        document.getElementById("memberNote").value=""; document.getElementById("memberProvince").value="";
+        document.getElementById("memberDistrict").innerHTML=`<option value="">-- ເລືອກແຂວງກ່ອນ --</option>`;
+        alert("ເພີ່ມສະມາຊິກສຳເລັດ!\nລະຫັດສະມາຊິກ: " + member.code);
+    } catch(err) { alert("Error: " + err.message); }
+}
+
+async function deleteMember(id, code, name){
+    if(currentRole !== "admin") return;
+    if(deaths.some(d => d.memberId === id)) return alert("ບໍ່ສາມາດລົບສະມາຊິກນີ້ໄດ້\nເພາະສະມາຊິກນີ້ມີປະຫວັດການເສຍຊີວິດແລ້ວ.");
+    if(!confirm(`ຢືນຢັນການລົບສະມາຊິກ ${code}?`)) return;
+    try {
+        await db.collection("members").doc(id).delete();
+        addAuditLog("ລົບສະມາຊິກ", `ລະຫັດ: ${code}, ຊື່: ${name}`);
+    } catch(err) { alert("Error: " + err.message); }
+}
+
+async function addDeath(){
+    if(currentRole !== "admin") return;
+    let memberId = document.getElementById("deathMember").value;
+    let date = document.getElementById("deathDate").value;
+    let type = document.getElementById("deathType").value;
+
+    if(!memberId || !date || !type) return alert("ກະລຸນາປ້ອນຂໍ້ມູນໃຫ້ຄົບ");
+    let member = members.find(m => m.id === memberId);
+    if(!member) return alert("ບໍ່ພົບສະມາຊິກ");
+    if(deaths.some(d => d.memberId === memberId)) return alert("ສະມາຊິກ/ຄອບຄົວນີ້\nມີການບັນທຶກການເສຍຊີວິດແລ້ວ.");
+
+    let rate = type === "child" ? 100000 : 200000;
+    let deathCode = generateDeathCode();
+    let death = {
+        code: deathCode, memberId: memberId, date: date, type: type, rate: rate,
+        memberCount: members.length, total: members.length * rate, 
+        note: document.getElementById("deathNote").value.trim(), paid: false, evidenceUrl: "",
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    };
+
+    try {
+        await db.collection("deaths").add(death);
+        addAuditLog("ບັນທຶກການເສຍຊີວິດ", `ກໍລະນີ: ${deathCode}, ຄອບຄົວ: ${member.name}`);
+        document.getElementById("deathMember").value=""; document.getElementById("deathDate").value=""; 
+        document.getElementById("deathType").value=""; document.getElementById("deathNote").value="";
+        document.getElementById("deathCalculation").style.display="none";
+        alert(`ບັນທຶກການເສຍຊີວິດສຳເລັດ!\n\nເລກກໍລະນີ: ${death.code}\nຈຳນວນຄອບຄົວ: ${death.memberCount}\nອັດຕາ: ${money(rate)}\nຍອດທີ່ຕ້ອງເກັບ: ${money(death.total)}`);
+    } catch(err) { alert("Error: " + err.message); }
+}
+
+function calculateDeath(){
+    let memberId = document.getElementById("deathMember").value;
+    let type = document.getElementById("deathType").value;
+    let box = document.getElementById("deathCalculation");
+    if(!memberId || !type){ box.style.display="none"; return; }
+    
+    let member = members.find(m => m.id === memberId);
+    let rate = type === "child" ? 100000 : 200000;
+    box.style.display="block";
+    box.innerHTML = `
+        <b>ຜູ້ແຈ້ງ/ຕົວແທນຄອບຄົວ:</b> ${escapeHTML(member.name)} ${escapeHTML(member.surname || "")}<br><br>
+        <b>ທີ່ຢູ່:</b> ${escapeHTML(member.province || "-")} - ${escapeHTML(member.district || "-")} - ${escapeHTML(member.village || "-")}<br><br>
+        <b>ຜູ້ເສຍຊີວິດເປັນ:</b> ${type === "child" ? "👶 ເດັກນ້ອຍ" : "👨 ຜູ້ໃຫຍ່"}<br><br>
+        <b>ຈຳນວນສະມາຊິກ/ຄອບຄົວ:</b> ${members.length.toLocaleString()} ຄອບຄົວ<br><br>
+        <b>ອັດຕາ:</b> ${money(rate)} / ຄອບຄົວ<br><br>
+        <b>💰 ຍອດທີ່ຕ້ອງເກັບ:</b>
+        <div class="money">${members.length.toLocaleString()} × ${rate.toLocaleString()} = ${money(members.length * rate)}</div>`;
+}
+
+/* =====================================================
+   PAYMENT & EVIDENCE (ການຊຳລະ ແລະ ຫຼັກຖານ)
+===================================================== */
+async function togglePaid(id, code){
+    if(currentRole !== "admin") return;
+    let death = deaths.find(d => d.id === id);
+    if(!death) return;
+    try {
+        let newStatus = !death.paid;
+        await db.collection("deaths").doc(id).update({ paid: newStatus });
+        addAuditLog("ປ່ຽນສະຖານະ", `ກໍລະນີ: ${code}, ສະຖານະ: ${newStatus ? 'ຈ່າຍແລ້ວ' : 'ຍັງບໍ່ຈ່າຍ'}`);
+    } catch(err) { alert("Error: " + err.message); }
+}
+
+async function uploadEvidence(event, id, code) {
+    if(currentRole !== "admin") return;
+    let file = event.target.files[0];
+    if(!file) return;
+    
+    try {
+        alert("ກຳລັງອັບໂຫຼດຮູບຫຼັກຖານ... ກະລຸນາລໍຖ້າຈັກໜ່ອຍ");
+        const ref = storage.ref(`evidence/${id}_${file.name}`);
+        await ref.put(file);
+        const url = await ref.getDownloadURL();
+        
+        await db.collection("deaths").doc(id).update({ evidenceUrl: url });
+        addAuditLog("ອັບໂຫຼດຫຼັກຖານ", `ກໍລະນີ: ${code}`);
+        alert("ອັບໂຫຼດຫຼັກຖານສຳເລັດ!");
+    } catch (error) {
+        alert("ອັບໂຫຼດລົ້ມເຫຼວ: " + error.message);
+    }
+}
+
+/* =====================================================
+   RENDERING FUNCTIONS (ສະແດງຜົນເທິງໜ້າຈໍ)
+===================================================== */
+function renderMembers(){
+    let tbody = document.getElementById("memberTable");
+    if(!tbody) return;
+    let search = (document.getElementById("memberSearch")?.value || "").toLowerCase().trim();
+    let list = members.filter(m => [m.code, m.name, m.surname, m.phone, m.province, m.district, m.village].join(" ").toLowerCase().includes(search));
+    
+    if(!list.length) { tbody.innerHTML = `<tr><td colspan="8" class="empty">ຍັງບໍ່ມີຂໍ້ມູນສະມາຊິກ</td></tr>`; return; }
+    
+    tbody.innerHTML = list.map(m => `
+        <tr>
+            <td><b>${escapeHTML(m.code)}</b></td>
+            <td>${escapeHTML(m.name)} ${escapeHTML(m.surname || "")}</td>
+            <td>${escapeHTML(m.phone||"-")}</td>
+            <td>${escapeHTML(m.province||"-")}</td>
+            <td>${escapeHTML(m.district||"-")}</td>
+            <td>${escapeHTML(m.village||"-")}</td>
+            <td><span class="badge badge-active">ເປັນສະມາຊິກ</span></td>
+            <td class="admin-only"><button class="btn btn-danger" onclick="deleteMember('${m.id}', '${m.code}', '${m.name}')">ລົບ</button></td>
+        </tr>`).join("");
+}
+
+function renderDeathMemberSelect(){
+    let select = document.getElementById("deathMember");
+    if(!select) return;
+    let old = select.value;
+    select.innerHTML = `<option value="">-- ເລືອກສະມາຊິກ/ຄອບຄົວ --</option>` + members.map(m => `<option value="${m.id}">${escapeHTML(m.code)} - ${escapeHTML(m.name)} ${escapeHTML(m.surname || "")} - ${escapeHTML(m.province || "")} - ${escapeHTML(m.district || "")}</option>`).join("");
+    if(members.some(m => m.id === old)) select.value = old;
+}
+
+function renderDeaths(){
+    let tbody = document.getElementById("deathTable");
+    if(!tbody) return;
+    if(!deaths.length) { tbody.innerHTML = `<tr><td colspan="8" class="empty">ຍັງບໍ່ມີກໍລະນີເສຍຊີວິດ</td></tr>`; return; }
+    
+    tbody.innerHTML = deaths.map(d => {
+        let m = members.find(x => x.id === d.memberId);
+        return `<tr>
+            <td><b>${escapeHTML(d.code)}</b></td>
+            <td>${escapeHTML(d.date)}</td>
+            <td>${m ? escapeHTML(m.name) + " " + escapeHTML(m.surname || "") : "-"}</td>
+            <td>${d.type==="child"?`<span class="badge badge-child">👶 ເດັກນ້ອຍ</span>`:`<span class="badge badge-adult">👨 ຜູ້ໃຫຍ່</span>`}</td>
+            <td>${d.memberCount}</td>
+            <td>${money(d.rate)}</td>
+            <td><b>${money(d.total)}</b></td>
+            <td>${d.paid?`<span class="badge badge-paid">ຈ່າຍແລ້ວ</span>`:`<span class="badge badge-unpaid">ຍັງບໍ່ຈ່າຍ</span>`}</td>
+        </tr>`;
+    }).join("");
+}
+
+function renderCollection(){
+    let total = deaths.reduce((sum,d)=> sum + Number(d.total||0), 0);
+    let paid = deaths.filter(d=>d.paid).reduce((sum,d)=> sum + Number(d.total||0), 0);
+    document.getElementById("collectionMembers").textContent = members.length;
+    document.getElementById("collectionDeaths").textContent = deaths.length;
+    document.getElementById("collectionTotal").textContent = money(total);
+    document.getElementById("collectionPaid").textContent = money(paid);
+
+    let tbody = document.getElementById("collectionTable");
+    if(!tbody) return;
+    if(!deaths.length) { tbody.innerHTML = `<tr><td colspan="10" class="empty">ຍັງບໍ່ມີລາຍການ</td></tr>`; return; }
+    
+    tbody.innerHTML = deaths.map(d => {
+        let m = members.find(x => x.id === d.memberId);
+        let evidenceLink = d.evidenceUrl ? `<a href="${d.evidenceUrl}" target="_blank" style="color:#0f766e;font-weight:bold;">📎 ເບິ່ງຫຼັກຖານ</a>` : `<span style="color:#9ca3af;font-size:12px;">ຍັງບໍ່ມີຫຼັກຖານ</span>`;
+        return `<tr>
+            <td>${escapeHTML(d.code)}</td>
+            <td>${escapeHTML(d.date)}</td>
+            <td>${m ? escapeHTML(m.name) + " " + escapeHTML(m.surname || "") : "-"}</td>
+            <td>${d.type==="child"?`<span class="badge badge-child">ເດັກ</span>`:`<span class="badge badge-adult">ຜູ້ໃຫຍ່</span>`}</td>
+            <td>${d.memberCount}</td>
+            <td>${money(d.rate)}</td>
+            <td><b>${money(d.total)}</b></td>
+            <td>${d.paid ? `<span class="badge badge-paid">ຈ່າຍແລ້ວ</span>` : `<span class="badge badge-unpaid">ຍັງບໍ່ຈ່າຍ</span>`}</td>
+            <td>${evidenceLink}</td>
+            <td class="admin-only">
+                <button class="btn ${d.paid ? "btn-warning" : "btn-success"}" style="margin-bottom:5px;" onclick="togglePaid('${d.id}', '${d.code}')">
+                    ${d.paid ? "ປ່ຽນເປັນ: ຍັງບໍ່ຈ່າຍ" : "ຢືນຢັນຈ່າຍແລ້ວ"}
+                </button>
+                <br>
+                <input type="file" accept="image/*" style="font-size:12px; padding:3px; max-width: 150px;" onchange="uploadEvidence(event, '${d.id}', '${d.code}')">
+            </td>
+        </tr>`;
+    }).join("");
+}
+
+function renderAudit(){
+    let tbody = document.getElementById("auditTable");
+    if(!tbody) return;
+    if(!audits.length) { tbody.innerHTML = `<tr><td colspan="4" class="empty">ບໍ່ມີປະຫວັດ</td></tr>`; return; }
+    
+    tbody.innerHTML = audits.map(a => {
+        let time = a.createdAt ? new Date(a.createdAt.toDate()).toLocaleString('lo-LA') : 'ກຳລັງບັນທຶກ...';
+        return `<tr>
+            <td>${time}</td>
+            <td><b>${escapeHTML(a.email)}</b></td>
+            <td>${escapeHTML(a.action)}</td>
+            <td>${escapeHTML(a.details)}</td>
+        </tr>`;
+    }).join("");
+}
+
+function renderDashboard(){
+    document.getElementById("dashboardMembers").textContent = members.length;
+    document.getElementById("dashboardDeaths").textContent = deaths.length;
+    let income = deaths.reduce((sum,d)=> sum + Number(d.total||0), 0);
+    let paid = deaths.filter(d=>d.paid).reduce((sum,d)=> sum + Number(d.total||0), 0);
+    document.getElementById("dashboardIncome").textContent = money(income);
+    document.getElementById("dashboardPaid").textContent = money(paid);
+    
+    let children = deaths.filter(d => d.type === "child").length;
+    let adults = deaths.filter(d => d.type === "adult").length;
+    let unpaid = income - paid;
+
+    document.getElementById("reportMembers").textContent = members.length;
+    document.getElementById("reportDeaths").textContent = deaths.length;
+    document.getElementById("reportChildren").textContent = children;
+    document.getElementById("reportAdults").textContent = adults;
+    document.getElementById("reportTotal").textContent = money(income);
+    document.getElementById("reportPaid").textContent = money(paid);
+    document.getElementById("reportUnpaid").textContent = money(unpaid);
+    
+    document.getElementById("exampleMembers").textContent = members.length;
+    document.getElementById("adultCalculation").textContent = members.length.toLocaleString() + " × 200,000 = " + money(members.length * 200000);
+    document.getElementById("childCalculation").textContent = members.length.toLocaleString() + " × 100,000 = " + money(members.length * 100000);
+}
+
+function refreshAll(){
+    renderMembers();
+    renderDeathMemberSelect();
+    renderDeaths();
+    renderCollection();
+    renderDashboard();
+}
+
+/* =====================================================
+   START APP
+===================================================== */
+loadProvinces();
+
+</script>
+</body>
+</html>
