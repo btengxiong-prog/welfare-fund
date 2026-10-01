@@ -200,7 +200,7 @@ body:not(.is-admin) .admin-only { display: none !important; }
                 <div class="table-wrap">
                     <table>
                         <thead>
-                            <tr><th>ເລກກໍລະນີ</th><th>ຄອບຄົວ</th><th>ຍອດ</th><th>ສະຖານະ</th><th>ຫຼັກຖານ (ໃບບິນ)</th><th class="admin-only">ອັບໂຫຼດ/ຈັດການ</th></tr>
+                            <tr><th>ເລກກໍລະນີ</th><th>ຄອບຄົວ</th><th>ຍອດ</th><th>ສະຖານະ</th><th>ຫຼັກຖານ (ໃບບິນ)</th><th>ອັບໂຫຼດ/ຈັດການ</th></tr>
                         </thead>
                         <tbody id="collectionTable"></tbody>
                     </table>
@@ -521,7 +521,6 @@ function calculateDeath(){
    PAYMENT & EVIDENCE
 ===================================================== */
 async function togglePaid(id, code){
-    if(currentRole !== "admin") return;
     let death = deaths.find(d => d.id === id);
     if(!death) return;
     try {
@@ -532,7 +531,6 @@ async function togglePaid(id, code){
 }
 
 async function uploadEvidence(event, id, code) {
-    if(currentRole !== "admin") return;
     let file = event.target.files[0];
     if(!file) return;
     
@@ -630,7 +628,7 @@ function renderCollection(){
             <td><b>${money(d.total)}</b></td>
             <td>${d.paid ? `<span class="badge badge-paid">ຈ່າຍແລ້ວ</span>` : `<span class="badge badge-unpaid">ຍັງບໍ່ຈ່າຍ</span>`}</td>
             <td>${evidenceLink}</td>
-            <td class="admin-only">
+            <td>
                 <button class="btn ${d.paid ? "btn-warning" : "btn-success"}" style="margin-bottom:5px;" onclick="togglePaid('${d.id}', '${d.code}')">
                     ${d.paid ? "ປ່ຽນເປັນ: ຍັງບໍ່ຈ່າຍ" : "ຢືນຢັນຈ່າຍແລ້ວ"}
                 </button>
