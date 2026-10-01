@@ -165,8 +165,8 @@ body:not(.is-admin) .admin-only { display: none !important; }
 
         <!-- DEATH -->
         <section id="death" class="page">
-            <div class="panel admin-only">
-                <h2>⚰️ ບັນທຶກການເສຍຊີວິດ (Admin Only)</h2>
+            <div class="panel">
+                <h2>⚰️ ບັນທຶກການເສຍຊີວິດ</h2>
                 <div class="form-grid">
                     <div class="field"><label>ຄອບຄົວຜູ້ເສຍຊີວິດ *</label><select id="deathMember" onchange="calculateDeath()"></select></div>
                     <div class="field"><label>ວັນທີເສຍຊີວິດ *</label><input id="deathDate" type="date"></div>
@@ -482,7 +482,6 @@ async function deleteMember(id, code, name){
 }
 
 async function addDeath(){
-    if(currentRole !== "admin") return;
     let memberId = document.getElementById("deathMember").value;
     let date = document.getElementById("deathDate").value;
     let type = document.getElementById("deathType").value;
